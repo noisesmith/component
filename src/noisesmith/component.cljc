@@ -1,5 +1,5 @@
-(ns com.stuartsierra.component
-  (:require [com.stuartsierra.dependency :as dep]))
+(ns noisesmith.component
+  (:require [noisesmith.dependency :as dep]))
 
 (defprotocol Lifecycle
   (start [component]
@@ -13,7 +13,8 @@
 
 ;; No-op implementation if one is not defined.
 (extend-protocol Lifecycle
-  java.lang.Object
+  #?(:clj java.lang.Object
+     :cljs object)
   (start [this]
     this)
   (stop [this]
@@ -69,7 +70,8 @@
       (throw (nil-component system system-key)))
     (when (= ::not-found component)
       (throw (ex-info (str "Missing dependency " dependency-key
-                           " of " (.getName (class component))
+                           " of " #?(:clj (.getName (type component))
+                                     :cljs (type component))
                            " expected in system at " system-key)
                       {:reason ::missing-dependency
                        :system-key key
@@ -114,9 +116,10 @@
 
 (defn- try-action [component system key f args]
   (try (apply f component args)
-       (catch Throwable t
+       (catch #?(:clj Throwable :cljs js/Object) t
          (throw (ex-info (str "Error in component " key
-                              " in system " (.getName (class system))
+                              " in system " #?(:clj  (.getName (type system))
+                                               :cljs (type system))
                               " calling " f)
                          {:reason ::component-function-threw-exception
                           :function f
@@ -178,9 +181,9 @@
   (stop [system]
     (stop-system system)))
 
-(defmethod clojure.core/print-method SystemMap
-  [system ^java.io.Writer writer]
-  (.write writer "#<SystemMap>"))
+#?(:clj (defmethod clojure.core/print-method SystemMap
+          [system ^java.io.Writer writer]
+          (.write writer "#<SystemMap>")))
 
 (defn system-map
   "Returns a system constructed of key/value pairs. The system has
@@ -195,8 +198,9 @@
   [& keyvals]
   ;; array-map doesn't check argument length (CLJ-1319)
   (when-not (even? (count keyvals))
-    (throw (IllegalArgumentException.
-            "system-map requires an even number of arguments")))
+    (throw #?(:clj (IllegalArgumentException. "system-map requires an even number of arguments")
+              :cljs (js/Error. "system-map requires an even number of arguments"))))
+
   (map->SystemMap (apply array-map keyvals)))
 
 (defn ex-component?
@@ -205,7 +209,7 @@
   [throwable]
   (let [{:keys [reason]} (ex-data throwable)]
     (and (keyword? reason)
-         (= "com.stuartsierra.component"
+         (= "noisesmith.component"
             (namespace reason)))))
 
 (defn ex-without-components

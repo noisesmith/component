@@ -1,7 +1,7 @@
-(ns com.stuartsierra.component-test
+(ns noisesmith.component-test
   (:require [clojure.test :refer (deftest is are)]
             [clojure.set :refer (map-invert)]
-            [com.stuartsierra.component :as component]))
+            [noisesmith.component :as component]))
 
 (def ^:dynamic *log* nil)
 

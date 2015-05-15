@@ -11,7 +11,7 @@
    [clojure.string :as str]
    [clojure.test :as test]
    [clojure.tools.namespace.repl :refer (refresh refresh-all)]
-   [com.stuartsierra.component :refer :all]))
+   [noisesmith.component :refer :all]))
 
 (defrecord DummyComponent [name deps]
   Lifecycle
