@@ -1,10 +1,10 @@
-(defproject noisesmith/component "0.2.4-SNAPSHOT"
+(defproject noisesmith/component "0.2.5"
   :description "Managed lifecycle of stateful objects"
   :url "https://github.com/noisesmith/component"
   :license {:name "The MIT License"
             :url "http://opensource.org/licenses/MIT"}
   :min-lein-version "2.1.3"  ; added :global-vars
-  :dependencies [[noisesmith/dependency "0.1.2-SNAPSHOT"]]
+  :dependencies [[noisesmith/dependency "0.1.3"]]
   :global-vars {*warn-on-reflection* true}
   :aliases {"test-all"
             ["with-profile" "clj1.4:clj1.5:clj1.6:clj1.7" "test"]}
